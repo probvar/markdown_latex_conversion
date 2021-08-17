@@ -28,10 +28,17 @@ def latex_convert(file_path):
         # for markdown using regex.
         # example: $|s\rangle$ ---> <img src="https://latex.codecogs.com/svg.latex?|s\rangle">,
         # where some of the parts of the link were left out for readability
-        content_new = re.sub('(?:((?<!\$)\${1,2}(?!\$)))(?(1)(.*?)(?<!\$)\\1(?!\$))',
+        content = re.sub('(?:((?<!\$)\${1,2}(?!\$)))(?(1)(.*?)(?<!\$)\\1(?!\$))',
             '<img align=center src=\"https://latex.codecogs.com/svg.latex?\\\\small\\\\pagecolor{white}\\2\">',
             content)
-    
+        
+        # replace all *N* or *a* or *x* with the latex.codecogs implementation
+        # for markdown using regex.
+        # example: *N* ---> <img src="https://latex.codecogs.com/svg.latex?N">
+        content = re.sub('\*([a-zA-Z]){1,10}\*',
+            '<img align=center src=\"https://latex.codecogs.com/svg.latex?\\\\small\\\\pagecolor{white}\\1\">',
+            content)
+
     # seperate filename from extension
     file_name = os.path.basename(file_path).split('.') 
     
@@ -40,7 +47,7 @@ def latex_convert(file_path):
     # write out file in a renamed copy
     file_path_new = file_folder + '/' + file_name[0] + "_LATEX." + file_name[1]
     with open(file_path_new, "w+") as outfile:
-        outfile.write(content_new)
+        outfile.write(content)
 
 if __name__ == "__main__":
     file_path = sys.argv[1]
